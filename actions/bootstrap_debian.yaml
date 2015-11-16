@@ -1,0 +1,10 @@
+---
+  name: "bootstrap_debian"
+  runner_type: "run-remote-script"
+  description: "Bootstrap Puppet on a Debian compatible server"
+  enabled: true
+  entry_point: "bootstrap_debian.sh"
+  parameters:
+    sudo:
+      default: true
+      immutable: true

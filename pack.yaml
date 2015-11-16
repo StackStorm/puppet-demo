@@ -1,0 +1,5 @@
+name : puppet-demo
+description : pack of actions specifically created for Dimension Data puppet demo
+version : 0.1
+author : st2-dev
+email : info@stackstorm.com

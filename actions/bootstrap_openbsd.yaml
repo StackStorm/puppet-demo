@@ -1,0 +1,10 @@
+---
+  name: "bootstrap_openbsd"
+  runner_type: "run-remote-script"
+  description: "Bootstrap Puppet on an OpenBSD compatible server"
+  enabled: true
+  entry_point: "bootstrap_openbsd.sh"
+  parameters:
+    sudo:
+      default: true
+      immutable: true

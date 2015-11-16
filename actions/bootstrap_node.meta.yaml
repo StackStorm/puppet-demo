@@ -1,0 +1,20 @@
+---
+name: bootstrap_node
+runner_type: mistral-v2
+description: Bootstrap Puppet on a new node
+enabled: true
+entry_point: workflows/bootstrap_node.yaml
+parameters:
+  hostname:
+    type: string
+    required: true
+    description: "The host to install Puppet on"
+  username:
+    type: string
+    required: true
+    description: "SSH username for remote host"
+  password:
+    type: string
+    required: true
+    secret: true
+    description: "SSH password for remote host"

@@ -1,0 +1,97 @@
+---
+version: '2.0'
+
+puppet-demo.deploy_with_puppet_example:
+    type: direct
+    input:
+        - location
+        - datacenter
+        - image_name
+        - network_domain_name
+        - execute
+        - nodes
+    tasks:
+      get_location:
+        # [455, 26]
+        action: dimensiondata.get_location_by_id
+        input:
+          region: <% $.location %>
+          id: <% $.datacenter %>
+        on-success:
+          - create_network_domain
+        on-error:
+          - warning_error
+      create_network_domain:
+        # [385, 128]
+        action: dimensiondata.create_network_domain
+        input:
+          region: <% $.location %>
+          location: <% $.datacenter %>
+          name: <% $.network_domain_name %>
+          service_plan: "ADVANCED"
+        publish:
+          network_domain_id: <% $.create_network_domain.result.id %>
+        on-success:
+          - create_vlan
+        on-error:
+          - warning_error
+      create_vlan:
+         # [315, 230]
+         action: dimensiondata.create_vlan
+         input:
+            region: <% $.location %>
+            name: "Web VLAN"
+            network_domain_id: <% $.network_domain_id %>
+            private_ipv4_base_address: 10.0.2.0
+         publish:
+            vlan_id: <% $.create_vlan.result.id %>
+         on-success:
+            - deploy_web_servers
+         on-error:
+          - warning_error
+      deploy_web_servers:
+        # [245, 332]
+        with-items: i in <% list(range(0, $.nodes)) %>
+        action: dimensiondata.create_vm_mcp2
+        input:
+          region: <% $.location %>
+          location: <% $.datacenter %>
+          password: "PassWord!!"
+          image_name: <% $.image_name %>
+          network_domain_id: <% $.network_domain_id %>
+          vlan_id: <% $.vlan_id %>
+          name: "Web <% $.i %>"
+          description: "Web Server <% $.i %>"
+          is_started: true
+        publish:
+          vm_id: <% $.deploy_web_servers.result.select($.id) %>
+          vm_ip: <% $.deploy_web_server.result.select($.private_ips[0]) %>
+        on-error:
+          - warning_error
+        on-success:
+          - install_puppet
+      install_puppet:
+        # [175, 434]
+        with-items: node in <% $.deploy_web_servers.result.vm_ip %>
+        action: puppet-demo.bootstrap_node
+        input:
+          hostname: <% $.node %>
+          username: "root"
+          password: "PassWord!!"
+        on-error:
+          - warning_error
+        on-success:
+          - puppet_run
+      puppet_run:
+        # [105, 536]
+        with-items: node in <% $.deploy_web_servers.result.vm_ip %>
+        action: puppet.run_agent
+        input:
+          hosts: <% $.node %>
+        on-error:
+          - warning_error
+      warning_error:
+        # [425, 638]
+        action: slack.post_message
+        input:
+          message: "There was an error in deployment"

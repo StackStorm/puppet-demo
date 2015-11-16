@@ -1,0 +1,10 @@
+---
+  name: "os_detect"
+  runner_type: "run-remote-script"
+  description: "Get linux distro information"
+  enabled: true
+  entry_point: "osdetect.py"
+  parameters:
+    sudo:
+      default: false
+      immutable: true

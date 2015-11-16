@@ -1,0 +1,31 @@
+---
+name: deploy_with_puppet_example
+runner_type: mistral-v2
+description: Example with Puppet
+enabled: true
+entry_point: workflows/deploy_with_puppet_example.yaml
+parameters:
+  location:
+    type: string
+    required: false
+    description: "The location code"
+    default: "dd-na"
+  datacenter:
+    type: string
+    required: false
+    description: "The datacenter ID"
+    default: "NA9"
+  network_domain_name:
+    type: string
+    required: false
+    description: "The name of the new Network Domain"
+    default: "Puppet Example Network"
+  image_name:
+    type: string
+    required: false
+    default: "RedHat 6 64-bit 2 CPU"
+    description: The image name in CaaS to deploy
+  nodes:
+    type: integer
+    description: "The number of new nodes to deploy"
+    default: 2

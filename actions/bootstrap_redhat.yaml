@@ -1,0 +1,10 @@
+---
+  name: "bootstrap_redhat"
+  runner_type: "run-remote-script"
+  description: "Bootstrap puppet on a RedHat compatible server"
+  enabled: true
+  entry_point: "bootstrap_redhat.sh"
+  parameters:
+    sudo:
+      default: true
+      immutable: true
